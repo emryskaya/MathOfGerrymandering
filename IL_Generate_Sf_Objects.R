@@ -21,7 +21,18 @@ IL_blocks <- IL_blocks[order(IL_blocks$COUNTYFP10, IL_blocks$TRACTCE10, IL_block
 rownames(IL_blocks@data) <- NULL
 IL_blocks@data <- cbind(IL_blocks@data, Orderno = 1:length(IL_blocks$GEOID10))
 sf_IL_blocks <- st_as_sf(IL_blocks)
+
+#Checking to see if the two sources of data are identical so we can combine them
+load("IL_pop_total.Rdata")
+library(tidyr)
+popGEOID <- unite(IL_pop_total, GEOID, state, county, tract, block, sep = "" )
+popGEOID <- popGEOID[,"GEOID"]
+identical(sf_IL_blocks$GEOID10,popGEOID)
+
+cbind(sf_IL_blocks, "Population" = IL_pop_total$P001001)
+sf_IL_blocks <- cbind(sf_IL_blocks, "Population" = IL_pop_total$P001001)
 save(sf_IL_blocks, file = "sf_IL_blocks.Rdata")
+
 
 # IL_block_adjacency_list <- st_intersects(sf_IL_blocks,sf_IL_blocks)
 # IL_block_adjacency_list
@@ -30,8 +41,17 @@ save(sf_IL_blocks, file = "sf_IL_blocks.Rdata")
 # IL_block_adjacency_matrix <- sparseMatrix(i = IL_block_adjacency_df$row.id, j = IL_block_adjacency_df$col.id)
 # image(IL_block_adjacency_matrix[100:150,100:150])
 
+
+cong_dist <- congressional_districts()
+names(cong_dist)
+Il_cong_dist <- cong_dist[cong_dist$STATEFP == "17",]
+Il_cong_dist <- Il_cong_dist[order(Il_cong_dist$CD115FP),]
+sf_IL_cong_dist <-  st_as_sf(Il_cong_dist)
+save(sf_IL_cong_dist, file = "sf_IL_cong_dist.Rdata")
+
 IL_state_sen <- state_legislative_districts("IL")
 IL_state_cong <- state_legislative_districts("IL", house = "lower")
+
 sf_IL_state_sen <- st_as_sf(IL_state_sen)
 sf_IL_state_cong <- st_as_sf(IL_state_cong)
 save(sf_IL_state_sen, file = "sf_IL_state_sen.Rdata")

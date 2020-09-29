@@ -1,0 +1,40 @@
+---
+output: html_document
+params:
+  dist_no: 1
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo = FALSE, message = FALSE}
+library(sf)
+library(rgeos)
+library(tidyverse)
+```
+
+```{r echo = FALSE}
+load("IL_final_congress_scores.Rdata")
+```
+
+```{r echo = FALSE, results='asis'}
+cat("##", " Gerrymandering Report for Illinois Congressional District No:", params$dist_no, "\n")
+cat("####", " Number of Blocks Within District:",IL_final_congress_scores[[params$dist_no]][[6]] , "\n")
+cat("####", " Average Population Per Block:", IL_final_congress_scores[[params$dist_no]][[7]], "\n")
+cat("####", " Population Within District:",IL_final_congress_scores[[params$dist_no]][[4]], "\n")
+cat("####", " Population Along Inner Border of District:", IL_final_congress_scores[[params$dist_no]][[5]], "\n")
+cat("####", " Gerrymandering Score:", IL_final_congress_scores[[params$dist_no]][[1]], "\n")
+```
+
+
+```{r out.width="100%", dpi=300, echo=FALSE}
+ggplot() +
+  geom_sf(data = st_geometry(IL_final_congress_scores[[params$dist_no]][[2]])) +
+  geom_sf(data = st_geometry(IL_final_congress_scores[[params$dist_no]][[3]]), color = "red" )
+
+```
+
+

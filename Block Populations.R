@@ -8,7 +8,7 @@ readRenviron("~/.Renviron")
 Sys.getenv("CENSUS_KEY")
 
 apis <- listCensusApis()
-# View(apis)
+View(apis)
 
 # data2010 <- getCensus(
 #   name = "dec/sf1",
@@ -41,10 +41,12 @@ library(parallel)
 # VT_pop_total
 # save(VT_pop_total, file = "VT_pop_total.Rdata")
 
-IL_pop <- mclapply(as.list(seq(1,203)), get_county_pop, x = 17)
-IL_pop
+IL_pop <- mclapply(as.list(seq(1,203,2)), get_county_pop, x = 17)
 IL_pop_total <- do.call(rbind, IL_pop)
 rownames(IL_pop_total) <- 1:length(IL_pop_total$P001001)
 IL_pop_total
 save(IL_pop_total, file = "IL_pop_total.Rdata")
+nrow(IL_pop_total)
+
+
 
