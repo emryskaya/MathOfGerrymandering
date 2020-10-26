@@ -50,18 +50,15 @@ sf_IL_cong_dist$GEOID
 
 g_score <- function(district_no, electoral_region) {
   
-  print("Step 1")
   border_blocks_list <- st_touches(electoral_region[district_no,], sf_IL_blocks)
   border_blocks_df <- as.data.frame(border_blocks_list)
   abc <- as.integer(border_blocks_df[,"col.id"])
   single_sf_touches <- st_union(sf_IL_blocks[abc,])
 
-  print("Step 2")
   within_blocks_list <- st_within(sf_IL_blocks, electoral_region[district_no,])
   within_blocks_df <- as.data.frame(within_blocks_list)
   def <- as.integer(within_blocks_df[,"row.id"])
 
-  print("Step 3")
   inner_border_list <- st_touches(sf_IL_blocks, single_sf_touches)
   inner_border_df <- as.data.frame(inner_border_list)
   ghi <- as.integer(inner_border_df[,"row.id"])
@@ -72,7 +69,6 @@ g_score <- function(district_no, electoral_region) {
   
   score = sum(sf_IL_blocks[def,]$Population)/(sum(sf_IL_blocks[jkl,]$Population)^2)
   
-  print("Done")
   return(list(score,x,y))
   
   }
@@ -115,4 +111,9 @@ for(i in 1:18) {
 
 str(IL_final_congress_scores,1)
 save(IL_final_congress_scores, file = "IL_final_congress_scores.Rdata")
-IL_final_congress_scores[[1]]
+
+
+cvb <- lapply(IL_final_congress_scores, function(x){return (x[[1]])})
+unlist(cvb)
+which.min(unlist(cvb))
+which.max(unlist(cvb))

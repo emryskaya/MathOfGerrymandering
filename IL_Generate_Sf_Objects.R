@@ -31,7 +31,6 @@ identical(sf_IL_blocks$GEOID10,popGEOID)
 
 cbind(sf_IL_blocks, "Population" = IL_pop_total$P001001)
 sf_IL_blocks <- cbind(sf_IL_blocks, "Population" = IL_pop_total$P001001)
-save(sf_IL_blocks, file = "sf_IL_blocks.Rdata")
 
 
 # IL_block_adjacency_list <- st_intersects(sf_IL_blocks,sf_IL_blocks)
@@ -57,24 +56,34 @@ sf_IL_state_cong <- st_as_sf(IL_state_cong)
 save(sf_IL_state_sen, file = "sf_IL_state_sen.Rdata")
 save(sf_IL_state_cong, file = "sf_IL_state_cong.Rdata")
 
+sf_IL_blocks$Districtno <- 0
+
+for(x in 19:19) {
+  print(x)
+  within_blocks_list <- st_within(sf_IL_blocks, sf_IL_cong_dist[x,])
+  within_blocks_df <- as.data.frame(within_blocks_list)
+  def <- as.integer(within_blocks_df[,"row.id"])
+  
+  sf_IL_blocks[def,]$Districtno <- x
+}
 
 
-# CA_blocks <- tigris::blocks(state = "CA")
-# CA_blocks <- CA_blocks[order(CA_blocks$TRACTCE10, CA_blocks$BLOCKCE10),]
-# CA_blocks@data <- cbind(CA_blocks@data, orderno = 1:length(CA_blocks$GEOID10))
-# sf_CA_blocks <- st_as_sf(CA_blocks)
-# start <- Sys.time()
-# CA_block_adjacency_list <- st_intersects(sf_CA_blocks,sf_CA_blocks)
-# end <- Sys.time()
-# (end - start)
-# CA_block_adjacency_df <- as.data.frame(CA_block_adjacency_list)
-# CA_block_adjacency_matrix <- sparseMatrix(i = CA_block_adjacency_df$row.id, j = CA_block_adjacency_df$col.id)
-# CA_block_adjacency_matrix
+which(sf_IL_blocks$Districtno == 0)
 
-plot.new()
-plot(st_geometry(sf_IL_tracts[90:100,]), reset = FALSE, )
-plot(sf_IL_tracts[94,], col = "red", add = TRUE)
-plot(sf_IL_tracts[95,], col = "blue", add = TRUE)
-plot(sf_IL_tracts[97,], col = "green", add = TRUE)
-plot(sf_IL_tracts[98,], col = "orange", add = TRUE)
+ints <- st_intersection(sf_IL_blocks[5109,], sf_IL_cong_dist)
+
+str(ints)
+
+par(mfrow = c(1,1))
+plot(st_geometry(sf_IL_cong_dist[c(13),]))
+plot(st_geometry(sf_IL_blocks[5109,]), add = TRUE, col = "red")
+
+sf_IL_blocks[5105:5115,]
+save(sf_IL_blocks, file = "sf_IL_blocks.Rdata")
+
+plot(Il_cong_dist[13,], xlim = c(-89.28, -89.24), ylim = c(38.99, 39.012))
+plot(IL_blocks[5109,], add = TRUE)
+
+summary(IL_blocks[5109,]@polygons[[1]]@Polygons[[1]]@coords)
+
 
